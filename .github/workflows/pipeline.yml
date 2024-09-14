@@ -2,7 +2,7 @@ name: "Pipeline: Test, Lint, Build"
 on:
   push:
     branches:
-      - master
+      - v0.52.5-isrc-tags
     tags:
       - "v*"
   pull_request:
@@ -16,6 +16,8 @@ jobs:
     container: deluan/ci-goreleaser:1.22.3-1
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: v0.52.5-isrc-tags
 
       - name: Config workspace folder as trusted
         run: git config --global --add safe.directory $GITHUB_WORKSPACE;  git describe --dirty --always --tags
@@ -48,6 +50,8 @@ jobs:
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
+        with:
+          ref: v0.52.5-isrc-tags
 
       - name: Config workspace folder as trusted
         run: git config --global --add safe.directory $GITHUB_WORKSPACE;  git describe --dirty --always --tags
@@ -68,6 +72,8 @@ jobs:
       NODE_OPTIONS: "--max_old_space_size=4096"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: v0.52.5-isrc-tags
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -109,6 +115,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          ref: v0.52.5-isrc-tags
           fetch-depth: 0
 
       - name: Config workspace folder as trusted
@@ -158,6 +165,8 @@ jobs:
         if: env.DOCKER_IMAGE != ''
 
       - uses: actions/checkout@v4
+        with:
+          ref: v0.52.5-isrc-tags
         if: env.DOCKER_IMAGE != ''
 
       - uses: actions/download-artifact@v4
