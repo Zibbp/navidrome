@@ -13,12 +13,20 @@ func init() {
 
 func upAddMediafileIsrc(ctx context.Context, tx *sql.Tx) error {
 	_, err := tx.ExecContext(ctx, `
-alter table media_file
-	add isrc varchar default '';
-alter table media_file
-	add upc varchar default '';
-alter table album
-	add upc varchar default '';
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='media_file' AND column_name='isrc') THEN
+			ALTER TABLE media_file ADD COLUMN isrc varchar DEFAULT '';
+	END IF;
+
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='media_file' AND column_name='upc') THEN
+			ALTER TABLE media_file ADD COLUMN upc varchar DEFAULT '';
+	END IF;
+
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='album' AND column_name='upc') THEN
+			ALTER TABLE album ADD COLUMN upc varchar DEFAULT '';
+	END IF;
+END $$;
 	`)
 	return err
 }
