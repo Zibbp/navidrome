@@ -13,20 +13,23 @@ func init() {
 
 func upAddMediafileIsrc(ctx context.Context, tx *sql.Tx) error {
 	_, err := tx.ExecContext(ctx, `
-DO $$
-BEGIN
-	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='media_file' AND column_name='isrc') THEN
-			ALTER TABLE media_file ADD COLUMN isrc varchar DEFAULT '';
-	END IF;
+-- Add isrc to media_file if it doesn't exist
+SELECT CASE 
+	WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('media_file') WHERE name = 'isrc') THEN
+			ALTER TABLE media_file ADD COLUMN isrc TEXT DEFAULT '';
+END;
 
-	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='media_file' AND column_name='upc') THEN
-			ALTER TABLE media_file ADD COLUMN upc varchar DEFAULT '';
-	END IF;
+-- Add upc to media_file if it doesn't exist
+SELECT CASE 
+	WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('media_file') WHERE name = 'upc') THEN
+			ALTER TABLE media_file ADD COLUMN upc TEXT DEFAULT '';
+END;
 
-	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='album' AND column_name='upc') THEN
-			ALTER TABLE album ADD COLUMN upc varchar DEFAULT '';
-	END IF;
-END $$;
+-- Add upc to album if it doesn't exist
+SELECT CASE 
+	WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('album') WHERE name = 'upc') THEN
+			ALTER TABLE album ADD COLUMN upc TEXT DEFAULT '';
+END;
 	`)
 	return err
 }
