@@ -13,23 +13,12 @@ func init() {
 
 func upAddMediafileIsrc(ctx context.Context, tx *sql.Tx) error {
 	_, err := tx.ExecContext(ctx, `
--- Add isrc to media_file if it doesn't exist
-SELECT CASE 
-	WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('media_file') WHERE name = 'isrc') THEN
-			ALTER TABLE media_file ADD COLUMN isrc TEXT DEFAULT '';
-END;
-
--- Add upc to media_file if it doesn't exist
-SELECT CASE 
-	WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('media_file') WHERE name = 'upc') THEN
-			ALTER TABLE media_file ADD COLUMN upc TEXT DEFAULT '';
-END;
-
--- Add upc to album if it doesn't exist
-SELECT CASE 
-	WHEN NOT EXISTS (SELECT 1 FROM pragma_table_info('album') WHERE name = 'upc') THEN
-			ALTER TABLE album ADD COLUMN upc TEXT DEFAULT '';
-END;
+alter table media_file
+	add isrc varchar default '';
+alter table media_file
+	add upc varchar default '';
+alter table album
+	add upc varchar default '';
 	`)
 	return err
 }
